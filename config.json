@@ -1,4 +1,5 @@
 {
+    "master":true,
     "server":true,
     "ip":"",
     "port":9010,

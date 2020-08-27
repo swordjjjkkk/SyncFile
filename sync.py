@@ -2,6 +2,7 @@
 #3.以server为基准校准文件，校准完之后两边数据库是一致的，之后的文件变动只与自身作比较
 #4.间隔n秒检测一次，当发现有变动，TCP传送新的文件给另一端
 
+import base64
 import struct
 import json
 import pickle
@@ -38,14 +39,10 @@ def GetFileDatabase():
                 filedatabase[fullpath]=finalhash
     return filedatabase
 
-def ReceiveData(socketid,sync,firstbyte):
+def ReceiveData(socketid):
 
-    if sync:
-        n=4
-        totaldata=b''
-    else:
-        n=3
-        totaldata+=firstbyte
+    n=4
+    totaldata=b''
     while True:
         data=socketid.recv(n)
         if data:
@@ -76,9 +73,83 @@ def SendData(socketid,jsondata):
     socketid.sendall(length)
     socketid.sendall(bytejsondata)
 
+# {
+#     "path":{"b64file":"value","flag":1}
+# }
+def CompareDatabase(old,new):
+    res={}
+    # 先处理大家都有的,改动的
+    # 然后处理new有old没有的,新增的
+    # 最后处理old有new没有的,删除的
+    for key,value in new:
+        key=key.replace(config['path'],'',1)
+        if old.get(key)!=None:
+            if value!=old[key]:
+                res[key]={"b64file":EncodeFile(key),"flag":1}
+    for key,value in new:
+        key=key.replace(config['path'],'',1)
+        if old.get(key)==None:
+            res[key]={"b64file":EncodeFile(key),"flag":2}
+
+    for key,value in old:
+        key=key.replace(config['path'],'',1)
+        if new.get(key)==None:
+            res[key]={"b64file":b"","flag":3}
+    return res
+
+
 
 def EncodeFile(path):
-    return 1
+    total=b""
+    with open(path,'rb') as f:
+        while True:
+            temp=f.read(1024)
+            if temp==b"":
+                break
+            else:
+                total+=temp
+    res=base64.b16encode(total)
+    return res
+
+
+def DecodeFile(path,b64file):
+    filedata=base64.b64decode(b64file)
+    with open(path,"wb") as f:
+        f.write(filedata)
+
+def EventLoop(socketid):
+    if config['master']:
+        data=ReceiveData(socketid)
+        filehash=GetFileDatabase()
+        sendbytes=CompareDatabase(data,filehash)
+        SendData(socketid,sendbytes)
+    else:
+        filehash=GetFileDatabase()
+        SendData(socketid,filehash)
+        data=ReceiveData(socketid)
+        ProcessDiffStrucct(data)
+
+
+
+# {
+#     "path":{"b64file":"value","flag":1}
+# }
+
+def ProcessDiffStrucct(diffstruct):
+    for key,value in diffstruct:
+        key=config['path']+key
+        if value['flag']==3:
+            #delete
+            os.remove(key)
+        if value['flag']==2:
+            #edit
+            DecodeFile(key,value['b64file'])
+
+        if value['flag']==1:
+            #add
+            DecodeFile(key,value['b64file'])
+
+        pass
     pass
 
 def SocketConnect():
@@ -95,23 +166,14 @@ def SocketConnect():
         tcpServerSocket.listen(5)
         client_socket, client_address = tcpServerSocket.accept()
         print("客户端已连接")
-        filehash=GetFileDatabase()
-        SendData(client_socket,filehash)
-        data=ReceiveData(client_socket,True,0)
-        sendbytes={}
-        for i in data:
-            filedata=EncodeFile(i)
-            sendbytes[i]=filedata
-        SendData(client_socket,sendbytes)
+        EventLoop(client_socket)
     else:
         tcpClientSocket = socket(AF_INET, SOCK_STREAM)
         tcpClientSocket.connect(ADDRESS)
-        data=ReceiveData(tcpClientSocket,True,0)
-        oldfiles=[]
-        for i in data:
-            print(i)
-            oldfiles.append(i)
-        SendData(tcpClientSocket,oldfiles)
+        print("服务器已连接")
+        EventLoop(tcpClientSocket)
+        
+        
 
 
 
