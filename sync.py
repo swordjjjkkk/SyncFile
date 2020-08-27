@@ -151,6 +151,8 @@ def EventLoop(socketid):
             pass
         new=GetFileDatabase()
         sendbytes=CompareDatabase(old,new)
+        print("check every second")
+        print(sendbytes)
         if  bool(sendbytes):
             SendData(socketid,sendbytes)
 
@@ -158,7 +160,6 @@ def EventLoop(socketid):
         
         old=new
 
-        print("waiting ")
         time.sleep(1)
 
 
