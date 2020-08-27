@@ -150,6 +150,10 @@ def EventLoop(socketid):
         except BlockingIOError:
             pass
         new=GetFileDatabase()
+        print("new")
+        print(new)
+        print("old")
+        print(old)
         sendbytes=CompareDatabase(old,new)
         print("check every second")
         print(sendbytes)
@@ -160,7 +164,7 @@ def EventLoop(socketid):
         
         old=new
 
-        time.sleep(1)
+        time.sleep(10)
 
 
 
