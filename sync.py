@@ -119,7 +119,7 @@ def EncodeFile(path):
                 break
             else:
                 total+=temp
-    res=base64.b16encode(total)
+    res=base64.b64encode(total)
     return res
 
 
@@ -191,5 +191,15 @@ def SocketConnect():
 
 
 if __name__=='__main__':
+    # file1=EncodeFile("/root/temp/test.c")
+    # DecodeFile("/root/temp/test2.c",file1)
+    # total=b""
+    # with open("/root/SyncFile/README.md","rb") as f:
+    #     total=f.read(1024)
+    # 
+    # with open("/root/SyncFile/README2.md","wb") as f:
+    #     f.write(total)
     LoadConfig()
     SocketConnect()
+    
+
