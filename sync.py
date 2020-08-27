@@ -122,7 +122,7 @@ def EncodeFile(path):
 
 def DecodeFile(path,b64file):
     filedata=base64.b64decode(b64file)
-    with open(path,"wb") as f:
+    with open(path,mode="wb") as f:
         f.write(filedata)
 
 def EventLoop(socketid):
@@ -150,12 +150,12 @@ def ProcessDiffStrucct(diffstruct):
             #delete
             os.remove(key)
         if value['flag']==2:
-            #edit
-            DecodeFile(config['path']+key,value['b64file'])
+            #add
+            DecodeFile(key,value['b64file'])
 
         if value['flag']==1:
-            #add
-            DecodeFile(config['path']+key,value['b64file'])
+            #edit
+            DecodeFile(key,value['b64file'])
 
         pass
     pass
