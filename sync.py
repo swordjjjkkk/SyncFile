@@ -144,7 +144,7 @@ def EventLoop(socketid):
 # }
 
 def ProcessDiffStrucct(diffstruct):
-    for key,value in diffstruct:
+    for (key,value) in diffstruct.items():
         key=config['path']+key
         if value['flag']==3:
             #delete
