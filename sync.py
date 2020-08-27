@@ -2,6 +2,7 @@
 #3.以server为基准校准文件，校准完之后两边数据库是一致的，之后的文件变动只与自身作比较
 #4.间隔n秒检测一次，当发现有变动，TCP传送新的文件给另一端
 
+import os
 import base64
 import struct
 import json
