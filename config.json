@@ -3,7 +3,7 @@
     "server":true,
     "ip":"",
     "port":9010,
-    "path":"/root/SyncFile/",
+    "path":"/root/temp/",
     "allowtype":[".c",".cpp",".h",".py"],
     "syncinterval":1
 }

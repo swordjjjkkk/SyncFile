@@ -64,6 +64,8 @@ def ReceiveData(socketid):
             break
     jsondata=pickle.loads(totaldata)
 
+    print("receive data:")
+    print(jsondata)
     return jsondata
 
 def SendData(socketid,jsondata):
@@ -72,7 +74,10 @@ def SendData(socketid,jsondata):
     length=struct.pack("i",len(bytejsondata))
     socketid.sendall(length)
     socketid.sendall(bytejsondata)
+    print("send data:")
+    print(jsondata)
 
+    
 # {
 #     "path":{"b64file":"value","flag":1}
 # }
