@@ -85,9 +85,6 @@ def SendData(socketid,jsondata):
 #     "path":{"b64file":"value","flag":1}
 # }
 def CompareDatabase(old,new):
-    print("Compare old , new")
-    print(old)
-    print(new)
     res={}
     # 先处理大家都有的,改动的
     # 然后处理new有old没有的,新增的
@@ -165,7 +162,7 @@ def EventLoop(socketid):
         
         old=new
 
-        time.sleep(5)
+        time.sleep(config['syncinterval'])
 
 
 
