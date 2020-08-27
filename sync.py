@@ -144,9 +144,10 @@ def EventLoop(socketid):
     while True:
         try:
             ret=socketid.recv(1,MSG_PEEK)
-            if ret==1:
-                data=ReceiveData(socketid)
-                ProcessDiffStrucct(data)
+            data=ReceiveData(socketid)
+            ProcessDiffStrucct(data)
+            new=GetFileDatabase()
+            old=new
         except BlockingIOError:
             pass
         new=GetFileDatabase()
@@ -164,7 +165,7 @@ def EventLoop(socketid):
         
         old=new
 
-        time.sleep(10)
+        time.sleep(5)
 
 
 
