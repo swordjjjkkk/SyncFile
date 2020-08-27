@@ -145,7 +145,6 @@ def EventLoop(socketid):
 # {
 #     "path":{"b64file":"value","flag":1}
 # }
-
 def ProcessDiffStrucct(diffstruct):
     for (key,value) in diffstruct.items():
         key=config['path']+key
@@ -170,7 +169,7 @@ def SocketConnect():
     ADDRESS = (HOST, PORT)
     if config['server']:
         # 创建监听socket
-        tcpServerSocket = socket(AF_INET, SOCK_STREAM)
+        tcpServerSocket = socket(AF_INET, SOCK_STREAM|SOCK_NONBLOCK)
         tcpServerSocket.setsockopt( SOL_SOCKET,SO_REUSEADDR, 1 )
         # 绑定IP地址和固定端口
         tcpServerSocket.bind(ADDRESS)
