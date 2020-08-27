@@ -36,7 +36,7 @@ def GetFileDatabase():
                         theline=f.readline()
                 finalhash=thehash.hexdigest()
                 print(finalhash)
-                filedatabase[fullpath]=finalhash
+                filedatabase[fullpath.replace(config['path'],'',1)]=finalhash
     return filedatabase
 
 def ReceiveData(socketid):
@@ -82,22 +82,25 @@ def SendData(socketid,jsondata):
 #     "path":{"b64file":"value","flag":1}
 # }
 def CompareDatabase(old,new):
+    print("Compare old , new")
+    print(old)
+    print(new)
     res={}
     # 先处理大家都有的,改动的
     # 然后处理new有old没有的,新增的
     # 最后处理old有new没有的,删除的
-    for key,value in new:
-        key=key.replace(config['path'],'',1)
+    for (key,value) in new.items():
+        # key=key.replace(config['path'],'',1)
         if old.get(key)!=None:
             if value!=old[key]:
-                res[key]={"b64file":EncodeFile(key),"flag":1}
-    for key,value in new:
-        key=key.replace(config['path'],'',1)
+                res[key]={"b64file":EncodeFile(config['path']+key),"flag":1}
+    for (key,value) in new.items():
+        # key=key.replace(config['path'],'',1
         if old.get(key)==None:
-            res[key]={"b64file":EncodeFile(key),"flag":2}
+            res[key]={"b64file":EncodeFile(config['path']+key),"flag":2}
 
-    for key,value in old:
-        key=key.replace(config['path'],'',1)
+    for (key,value) in new.items():
+        # key=key.replace(config['path'],'',1)
         if new.get(key)==None:
             res[key]={"b64file":b"","flag":3}
     return res
@@ -148,11 +151,11 @@ def ProcessDiffStrucct(diffstruct):
             os.remove(key)
         if value['flag']==2:
             #edit
-            DecodeFile(key,value['b64file'])
+            DecodeFile(config['path']+key,value['b64file'])
 
         if value['flag']==1:
             #add
-            DecodeFile(key,value['b64file'])
+            DecodeFile(config['path']+key,value['b64file'])
 
         pass
     pass
@@ -165,6 +168,7 @@ def SocketConnect():
     if config['server']:
         # 创建监听socket
         tcpServerSocket = socket(AF_INET, SOCK_STREAM)
+        tcpServerSocket.setsockopt( SOL_SOCKET,SO_REUSEADDR, 1 )
         # 绑定IP地址和固定端口
         tcpServerSocket.bind(ADDRESS)
         print("服务器启动，监听端口{}...".format(ADDRESS[1]))
