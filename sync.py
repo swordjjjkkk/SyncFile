@@ -140,11 +140,24 @@ def EventLoop(socketid):
         data=ReceiveData(socketid)
         ProcessDiffStrucct(data)
     socketid.setblocking(False)
+    old=GetFileDatabase()
     while True:
         try:
-            socketid.recv(1,MSG_PEEK)
+            ret=socketid.recv(1,MSG_PEEK)
+            if ret==1:
+                data=ReceiveData(socketid)
+                ProcessDiffStrucct(data)
         except BlockingIOError:
             pass
+        new=GetFileDatabase()
+        sendbytes=CompareDatabase(old,new)
+        if  bool(sendbytes):
+            SendData(socketid,sendbytes)
+
+
+        
+        old=new
+
         print("waiting ")
         time.sleep(1)
 
