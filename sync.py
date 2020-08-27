@@ -139,6 +139,11 @@ def EventLoop(socketid):
         SendData(socketid,filehash)
         data=ReceiveData(socketid)
         ProcessDiffStrucct(data)
+    socketid.setblocking(False)
+    while True:
+        socketid.recv(1024)
+        print("waiting ")
+        time.sleep(1)
 
 
 
@@ -169,7 +174,7 @@ def SocketConnect():
     ADDRESS = (HOST, PORT)
     if config['server']:
         # 创建监听socket
-        tcpServerSocket = socket(AF_INET, SOCK_STREAM|SOCK_NONBLOCK)
+        tcpServerSocket = socket(AF_INET, SOCK_STREAM)
         tcpServerSocket.setsockopt( SOL_SOCKET,SO_REUSEADDR, 1 )
         # 绑定IP地址和固定端口
         tcpServerSocket.bind(ADDRESS)
