@@ -102,7 +102,7 @@ def CompareDatabase(old,new):
         if old.get(key)==None:
             res[key]={"b64file":EncodeFile(config['path']+key),"flag":2}
 
-    for (key,value) in new.items():
+    for (key,value) in old.items():
         # key=key.replace(config['path'],'',1)
         if new.get(key)==None:
             res[key]={"b64file":b"","flag":3}
