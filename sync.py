@@ -28,12 +28,15 @@ def GetFileDatabase():
                     flag=True
             if flag:
                 print(fullpath)
-                with open(fullpath,'r') as f:
+                total=b""
+                with open(fullpath,'rb') as f:
                     thehash=hashlib.md5()
-                    theline=f.readline()
-                    while(theline):
-                        thehash.update(theline.encode("utf8"))
-                        theline=f.readline()
+                    while True:
+                        temp=f.read(1024)
+                        if temp==b"":
+                            break
+                        else:
+                            thehash.update(temp)
                 finalhash=thehash.hexdigest()
                 print(finalhash)
                 filedatabase[fullpath.replace(config['path'],'',1)]=finalhash
