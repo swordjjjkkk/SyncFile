@@ -141,7 +141,10 @@ def EventLoop(socketid):
         ProcessDiffStrucct(data)
     socketid.setblocking(False)
     while True:
-        socketid.recv(1024)
+        try:
+            socketid.recv(1,MSG_PEEK)
+        except BlockingIOError:
+            pass
         print("waiting ")
         time.sleep(1)
 
