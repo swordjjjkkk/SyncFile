@@ -3,7 +3,7 @@
     "master":false,
     "ip":"",
     "port":9010,
-    "path":"/root/sharelib2/src/",
+    "path":"/root/sharelib2/",
     "syncinterval":1,
     "whitelist":[".*"],
     "blacklist":["build/.*"]

@@ -29,12 +29,14 @@ def GetFileDatabase():
             fullpath=os.path.join(root,name)
             flag=False
             for i in config['whitelist']:
-                if re.search(i,fullpath) !=None:
-                    flag==True
+                if re.search(i,fullpath) :
+                    print("find whitelist")
+                    flag=True
             if flag:
                 for i in config['blacklist']:
-                    if re.search(i,fullpath) !=None:
-                        flag==False
+                    if re.search(i,fullpath) :
+                        print("find blacklist")
+                        flag=False
             if flag:
                 print(fullpath)
                 total=b""
