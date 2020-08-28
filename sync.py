@@ -10,6 +10,9 @@ import pickle
 import os
 import hashlib
 import time
+
+
+
 from socket import *
 config={}
 def LoadConfig():
@@ -106,7 +109,24 @@ def CompareDatabase(old,new):
             res[key]={"b64file":b"","flag":3}
     return res
 
-
+def check_and_creat_dir(file_url):
+    '''
+    判断文件是否存在，文件路径不存在则创建文件夹
+    :param file_url: 文件路径，包含文件名
+    :return:
+    '''
+    file_gang_list = file_url.split('/')
+    if len(file_gang_list)>1:
+        [fname,fename] = os.path.split(file_url)
+        print(fname,fename)
+        if not os.path.exists(fname):
+            os.makedirs(fname)
+        else:
+            return None
+        #还可以直接创建空文件
+        
+    else:
+        return None
 
 def EncodeFile(path):
     total=b""
@@ -123,6 +143,7 @@ def EncodeFile(path):
 
 def DecodeFile(path,b64file):
     filedata=base64.b64decode(b64file)
+    check_and_creat_dir(path)
     with open(path,mode="wb") as f:
         f.write(filedata)
 
