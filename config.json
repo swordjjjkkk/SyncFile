@@ -1,9 +1,11 @@
 {
-    "master":false,
     "server":true,
+    "master":false,
     "ip":"",
     "port":9010,
-    "path":"/root/temp/",
-    "allowtype":[".c",".cpp",".h",".py"],
-    "syncinterval":1
+    "path":"/root/sharelib2/src/",
+    "syncinterval":1,
+    "whitelist":[".*"],
+    "blacklist":["build/.*"]
+
 }

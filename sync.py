@@ -10,6 +10,7 @@ import pickle
 import os
 import hashlib
 import time
+import re
 
 
 
@@ -27,9 +28,13 @@ def GetFileDatabase():
         for name in files:
             fullpath=os.path.join(root,name)
             flag=False
-            for i in config['allowtype']:
-                if fullpath.endswith(i):
-                    flag=True
+            for i in config['whitelist']:
+                if re.search(i,fullpath) !=None:
+                    flag==True
+            if flag:
+                for i in config['blacklist']:
+                    if re.search(i,fullpath) !=None:
+                        flag==False
             if flag:
                 print(fullpath)
                 total=b""
@@ -244,6 +249,9 @@ if __name__=='__main__':
     # 
     # with open("/root/SyncFile/README2.md","wb") as f:
     #     f.write(total)
+
+    # print(re.search(".*","/root/"))
+    # print(re.search("/xx.*","/root/"))
     LoadConfig()
     SocketConnect()
     
