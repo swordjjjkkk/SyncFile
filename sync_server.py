@@ -154,6 +154,7 @@ def EventLoop(socketid):
 
     global config
     config=ReceiveData(socketid)
+    timeout=0
 
     if config['server']['master']:
         data=ReceiveData(socketid)
@@ -171,11 +172,18 @@ def EventLoop(socketid):
         try:
             ret=socketid.recv(1,MSG_PEEK)
             data=ReceiveData(socketid)
+            if data.get("heartbeat")!=None:
+                timeout=0
+                continue
             ProcessDiffStrucct(data)
             new=GetFileDatabase()
             old=new
         except BlockingIOError:
             pass
+        timeout+=1
+        if timeout>10:
+            socketid.close()
+            break
         new=GetFileDatabase()
         sendbytes=CompareDatabase(old,new)
         if  bool(sendbytes):

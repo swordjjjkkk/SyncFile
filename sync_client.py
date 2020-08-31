@@ -165,6 +165,7 @@ def EventLoop(socketid):
     socketid.setblocking(False)
     old=GetFileDatabase()
     while True:
+        SendData(socketid,{"heartbeat":"true"})
         try:
             ret=socketid.recv(1,MSG_PEEK)
             data=ReceiveData(socketid)
