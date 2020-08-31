@@ -1,11 +1,21 @@
 {
-    "server":true,
-    "master":false,
-    "ip":"",
-    "port":9010,
-    "path":"/root/sharelib2/",
-    "syncinterval":1,
-    "whitelist":[".*"],
-    "blacklist":["build/.*"]
+    "server":
+    {
+        "master":false,
+        "path":"/root/sharelib2/",
+        "syncinterval":1,
+        "whitelist":[".*"],
+        "blacklist":["build/.*"]
+    },
+    "client":
+    {
+        "master":false,
+        "ip":"",
+        "port":9010,
+        "path":"/root/sharelib2/",
+        "syncinterval":1,
+        "whitelist":[".*"],
+        "blacklist":["build/.*"]
+    },
 
 }
