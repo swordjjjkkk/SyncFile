@@ -31,15 +31,12 @@ def GetFileDatabase():
             flag=False
             for i in config['client']['whitelist']:
                 if re.search(i,fullpath) :
-                    print("find whitelist")
                     flag=True
             if flag:
                 for i in config['client']['blacklist']:
                     if re.search(i,fullpath) :
-                        print("find blacklist")
                         flag=False
             if flag:
-                print(fullpath)
                 total=b""
                 with open(fullpath,'rb') as f:
                     thehash=hashlib.md5()
@@ -50,7 +47,6 @@ def GetFileDatabase():
                         else:
                             thehash.update(temp)
                 finalhash=thehash.hexdigest()
-                print(finalhash)
                 filedatabase[fullpath.replace(config['client']['path'],'',1)]=finalhash
     return filedatabase
 
@@ -126,7 +122,6 @@ def check_and_creat_dir(file_url):
     file_gang_list = file_url.split('/')
     if len(file_gang_list)>1:
         [fname,fename] = os.path.split(file_url)
-        print(fname,fename)
         if not os.path.exists(fname):
             os.makedirs(fname)
         else:

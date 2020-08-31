@@ -31,15 +31,12 @@ def GetFileDatabase():
             flag=False
             for i in config['server']['whitelist']:
                 if re.search(i,fullpath) :
-                    print("find whitelist")
                     flag=True
             if flag:
                 for i in config['server']['blacklist']:
                     if re.search(i,fullpath) :
-                        print("find blacklist")
                         flag=False
             if flag:
-                print(fullpath)
                 total=b""
                 with open(fullpath,'rb') as f:
                     thehash=hashlib.md5()
@@ -50,7 +47,6 @@ def GetFileDatabase():
                         else:
                             thehash.update(temp)
                 finalhash=thehash.hexdigest()
-                print(finalhash)
                 filedatabase[fullpath.replace(config['server']['path'],'',1)]=finalhash
     return filedatabase
 
@@ -126,7 +122,6 @@ def check_and_creat_dir(file_url):
     file_gang_list = file_url.split('/')
     if len(file_gang_list)>1:
         [fname,fename] = os.path.split(file_url)
-        print(fname,fename)
         if not os.path.exists(fname):
             os.makedirs(fname)
         else:
@@ -219,7 +214,7 @@ def ProcessDiffStrucct(diffstruct):
 def SocketConnect():
 
     HOST ='0.0.0.0' 
-    PORT =9010
+    PORT =9011
     ADDRESS = (HOST, PORT)
     # 创建监听socket
     tcpServerSocket = socket(AF_INET, SOCK_STREAM)
@@ -227,10 +222,10 @@ def SocketConnect():
     # 绑定IP地址和固定端口
     tcpServerSocket.bind(ADDRESS)
     tcpServerSocket.listen(5)
-    
     while True:
         print("服务器启动，监听端口{}...".format(ADDRESS[1]))
         client_socket, client_address = tcpServerSocket.accept()
+        print("accept")
         print("客户端已连接")
         try:
             EventLoop(client_socket)

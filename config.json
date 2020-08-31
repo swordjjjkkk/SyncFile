@@ -16,6 +16,6 @@
         "syncinterval":1,
         "whitelist":[".*"],
         "blacklist":["build/.*"]
-    },
+    }
 
 }
