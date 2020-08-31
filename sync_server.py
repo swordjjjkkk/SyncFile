@@ -170,16 +170,21 @@ def EventLoop(socketid):
     old=GetFileDatabase()
     while True:
         try:
+            print("try")
             ret=socketid.recv(1,MSG_PEEK)
+            if ret==b"":
+                break
             data=ReceiveData(socketid)
             if data.get("heartbeat")!=None:
                 timeout=0
-                continue
-            ProcessDiffStrucct(data)
-            new=GetFileDatabase()
-            old=new
+            else:
+                ProcessDiffStrucct(data)
+                new=GetFileDatabase()
+                old=new
         except BlockingIOError:
             pass
+
+        print(timeout)
         timeout+=1
         if timeout>10:
             socketid.close()
