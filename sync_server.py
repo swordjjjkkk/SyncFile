@@ -219,6 +219,10 @@ def EventLoop(socketid):
 # }
 def ProcessDiffStrucct(diffstruct):
     for (key,value) in diffstruct.items():
+        if platform.system().lower()=='linux':
+            key.replace("\\","/")
+        if platform.system().lower()=='windows':
+            key.replace("/","\\")
         key=config['server']['path']+key
         if value['flag']==3:
             #delete
