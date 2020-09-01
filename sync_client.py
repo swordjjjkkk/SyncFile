@@ -2,7 +2,6 @@
 #2.建立TCP socket 连接
 #3.以server为基准校准文件，校准完之后两边数据库是一致的，之后的文件变动只与自身作比较
 #4.间隔n秒检测一次，当发现有变动，TCP传送新的文件给另一端
-import platform
 import os
 import base64
 import struct
@@ -28,6 +27,8 @@ def GetFileDatabase():
     for root,dirs,files in os.walk(config['client']['path']):
         for name in files:
             fullpath=os.path.join(root,name)
+            fullpath=fullpath.replace('\\','/')
+
             flag=False
             for i in config['client']['whitelist']:
                 if re.search(i,fullpath) :
@@ -126,10 +127,7 @@ def check_and_creat_dir(file_url):
     :param file_url: 文件路径，包含文件名
     :return:
     '''
-    if platform.system().lower()=='linux':
-        file_gang_list = file_url.split('/')
-    if platform.system().lower()=='windows':
-        file_gang_list = file_url.split('\\')
+    file_gang_list = file_url.split('/')
     
     if len(file_gang_list)>1:
         [fname,fename] = os.path.split(file_url)
@@ -208,10 +206,6 @@ def EventLoop(socketid):
 # }
 def ProcessDiffStrucct(diffstruct):
     for (key,value) in diffstruct.items():
-        if platform.system().lower()=='linux':
-            key.replace("\\","/")
-        if platform.system().lower()=='windows':
-            key.replace("/","\\")
         key=config['client']['path']+key
         if value['flag']==3:
             #delete
