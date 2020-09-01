@@ -55,24 +55,31 @@ def ReceiveData(socketid):
     n=4
     totaldata=b''
     while True:
-        data=socketid.recv(n)
-        if data:
-            totaldata+=data
-            n=n-len(data)
-        if n==0:
-            n=struct.unpack("i",totaldata)[0]
-            break
+        try:
+            data=socketid.recv(n)
+            if data:
+                totaldata+=data
+                n=n-len(data)
+            if n==0:
+                n=struct.unpack("i",totaldata)[0]
+                break
+        except BlockingIOError:
+            pass
                 
 
     data=b''
     totaldata=b''
     while True:
-        data=socketid.recv(n)
-        if data:
-            totaldata+=data
-            n=n-len(data)
-        if n==0:
-            break
+        try:
+            data=socketid.recv(n)
+            if data:
+                totaldata+=data
+                n=n-len(data)
+            if n==0:
+                break
+        except BlockingIOError:
+            pass
+            
     jsondata=pickle.loads(totaldata)
 
     print("receive data:")
@@ -170,7 +177,7 @@ def EventLoop(socketid):
     old=GetFileDatabase()
     while True:
         try:
-            ret=socketid.recv(1,MSG_PEEK)
+            ret=socketid.recv(4,MSG_PEEK)
             if ret==b"":
                 break
             data=ReceiveData(socketid)
@@ -182,6 +189,7 @@ def EventLoop(socketid):
                 old=new
         except BlockingIOError:
             pass
+        print(timeout)
 
         timeout+=1
         if timeout>10:
@@ -193,7 +201,7 @@ def EventLoop(socketid):
             print("diff things")
             print(sendbytes)
             SendData(socketid,sendbytes)
-
+        
 
         
         old=new

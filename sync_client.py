@@ -55,24 +55,31 @@ def ReceiveData(socketid):
     n=4
     totaldata=b''
     while True:
-        data=socketid.recv(n)
-        if data:
-            totaldata+=data
-            n=n-len(data)
-        if n==0:
-            n=struct.unpack("i",totaldata)[0]
-            break
+        try:
+            data=socketid.recv(n)
+            if data:
+                totaldata+=data
+                n=n-len(data)
+            if n==0:
+                n=struct.unpack("i",totaldata)[0]
+                break
+        except BlockingIOError:
+            pass
                 
 
     data=b''
     totaldata=b''
     while True:
-        data=socketid.recv(n)
-        if data:
-            totaldata+=data
-            n=n-len(data)
-        if n==0:
-            break
+        try:
+            data=socketid.recv(n)
+            if data:
+                totaldata+=data
+                n=n-len(data)
+            if n==0:
+                break
+        except BlockingIOError:
+            pass
+            
     jsondata=pickle.loads(totaldata)
 
     print("receive data:")
@@ -150,7 +157,9 @@ def DecodeFile(path,b64file):
     with open(path,mode="wb") as f:
         f.write(filedata)
 
+count=0
 def EventLoop(socketid):
+    global count
     SendData(socketid,config)
     if config['client']['master']:
         data=ReceiveData(socketid)
@@ -165,7 +174,8 @@ def EventLoop(socketid):
     socketid.setblocking(False)
     old=GetFileDatabase()
     while True:
-        SendData(socketid,{"heartbeat":"true"})
+        count+=1
+        SendData(socketid,{"heartbeat":count})
         try:
             ret=socketid.recv(1,MSG_PEEK)
             data=ReceiveData(socketid)
