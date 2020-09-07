@@ -11,7 +11,7 @@ import os
 import hashlib
 import time
 import re
-
+import select
 
 
 from socket import *
@@ -91,8 +91,20 @@ def SendData(socketid,jsondata):
 
     bytejsondata=pickle.dumps(jsondata)
     length=struct.pack("i",len(bytejsondata))
-    socketid.sendall(length)
-    socketid.sendall(bytejsondata)
+    socketid.send(length)
+    inputs=[socketid,]
+    splice=1
+    while True:
+        read_list,write_list,except_list=select.select(inputs,inputs,[],1)
+        for w in write_list:
+            splice+=1;
+            if len(bytejsondata)>splice*1000:
+                w.send(bytejsondata[(splice-1)*1000:splice*1000])
+            else:
+                w.send(bytejsondata[(splice-1)*1000:len(bytejsondata)])
+
+
+
     print("send data:")
     print(jsondata)
 
