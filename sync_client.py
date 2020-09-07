@@ -93,8 +93,9 @@ def SendData(socketid,jsondata):
     length=struct.pack("i",len(bytejsondata))
     socketid.send(length)
     inputs=[socketid,]
-    splice=1
+    splice=0
     while True:
+        flag=False
         read_list,write_list,except_list=select.select(inputs,inputs,[],1)
         for w in write_list:
             splice+=1;
@@ -102,11 +103,14 @@ def SendData(socketid,jsondata):
                 w.send(bytejsondata[(splice-1)*1000:splice*1000])
             else:
                 w.send(bytejsondata[(splice-1)*1000:len(bytejsondata)])
-
+                flag=True
+        if flag:
+            break
 
 
     print("send data:")
     print(jsondata)
+
 
     
 # {
@@ -190,14 +194,15 @@ def EventLoop(socketid):
     while True:
         count+=1
         SendData(socketid,{"heartbeat":count})
-        try:
-            ret=socketid.recv(1,MSG_PEEK)
-            data=ReceiveData(socketid)
-            ProcessDiffStrucct(data)
-            new=GetFileDatabase()
-            old=new
-        except BlockingIOError:
-            pass
+        while True:
+            try:
+                ret=socketid.recv(1,MSG_PEEK)
+                data=ReceiveData(socketid)
+                ProcessDiffStrucct(data)
+                new=GetFileDatabase()
+                old=new
+            except BlockingIOError:
+                break
         new=GetFileDatabase()
         sendbytes=CompareDatabase(old,new)
         if  bool(sendbytes):
