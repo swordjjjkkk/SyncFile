@@ -90,8 +90,23 @@ def SendData(socketid,jsondata):
 
     bytejsondata=pickle.dumps(jsondata)
     length=struct.pack("i",len(bytejsondata))
-    socketid.sendall(length)
-    socketid.sendall(bytejsondata)
+    socketid.send(length)
+    inputs=[socketid,]
+    splice=0
+    while True:
+        flag=False
+        read_list,write_list,except_list=select.select(inputs,inputs,[],1)
+        for w in write_list:
+            splice+=1;
+            if len(bytejsondata)>splice*1000:
+                w.send(bytejsondata[(splice-1)*1000:splice*1000])
+            else:
+                w.send(bytejsondata[(splice-1)*1000:len(bytejsondata)])
+                flag=True
+        if flag:
+            break
+
+
     print("send data:")
     print(jsondata)
 
